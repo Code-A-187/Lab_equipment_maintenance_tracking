@@ -1,8 +1,8 @@
 # lab_equipment_list = [
-#     {"id": 1, "name": "Centrifuge", "status": "active", "maintenance_cost":500},
-#     {"id": 2, "name": "Universal Oven", "status": "active", "maintenance_cost": 450},
-#     {"id": 3, "name": "Balance", "status": "broken", "maintenance_cost": 530},
-#     {'id': 4, 'name': 'Furnace', 'status': 'active', 'maintenance_cost': 250}
+#     ("Centrifuge", "active", 500),
+#     ("Universal Oven", "active", 450)
+#     # {"id": 3, "name": "Balance", "status": "broken", "maintenance_cost": 530},
+#     # {'id': 4, 'name': 'Furnace', 'status': 'active', 'maintenance_cost': 250}
 # ]
 
 import sqlite3
@@ -11,19 +11,19 @@ con = sqlite3.connect("lab.db")
 
 cur = con.cursor()
 
-cur.execute("CREATE TABLE equipment(id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR, status TEXT, maintenance_cost INTEGER)")
+# cur.execute("CREATE TABLE equipment(id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR, status TEXT, maintenance_cost INTEGER)")
 
-con.close
+# con.close()
 
-def add_equipment(lst, name, status, maintenance_cost):
-    id = max([i["id"] for i in lst]) + 1 # if some id is deleted will always get the max id
-    equipment = {"id": id, "name": name, "status": status, "maintenance_cost": maintenance_cost}
-    for i in lst:
-        if i["id"] == equipment["id"]:
-            return "Equipment with same ID already in the list"
-    
-    lst.append(equipment)
-    return f"Added equipment: {equipment}"
+def add_equipment(name, status, maintenance_cost):
+    equipment = (name, status,  maintenance_cost)
+    # # for i in lst:
+    # #     if i["id"] == equipment["id"]:
+    # #         return "Equipment with same ID already in the list"
+
+    cur.execute("INSERT INTO equipment VALUES(NULL, ?, ?, ?)", equipment)
+    con.commit()
+    return "Equipment successfully saved to database!"
     
 def list_broken_equipment(lst):
     list_broken = []
@@ -65,12 +65,13 @@ while True:
 
     if choice == 1:
         print(f"Enter equipment info:")
-        print(add_equipment(lab_equipment_list, input("Equipment name:"), input("Equipment status (active/broken):"), input("Maintenance cost:")))
+        print(add_equipment(input("Equipment name:"), input("Equipment status (active/broken):"), input("Maintenance cost:")))
     
     elif choice == 2:
-        print(maintenance_cost_sum(lab_equipment_list, input("Status (active / broken / all)")))
+        print(maintenance_cost_sum(input("Status (active / broken / all)")))
 
     elif choice == 3:
         print("Goodbye!")
+        con.close()
         break
 
