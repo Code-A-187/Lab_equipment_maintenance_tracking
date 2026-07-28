@@ -25,34 +25,44 @@ def add_equipment(name, status, maintenance_cost):
     con.commit()
     return "Equipment successfully saved to database!"
     
-def list_broken_equipment(lst):
-    list_broken = []
-    for i in lst:
-        if i["status"] == "broken":
-            list_broken.append(i)
+# def list_broken_equipment(lst):
+#     list_broken = []
+#     for i in lst:
+#         if i["status"] == "broken":
+#             list_broken.append(i)
     
-    return list_broken
+#     return list_broken
 
-def list_active_equipment(lst):
-    return [i for i in lst if i["status"] == "active"]
+# def list_active_equipment(lst):
+#     return [i for i in lst if i["status"] == "active"]
 
-def maintenance_cost_sum(lst, status):
-    total = 0
-    if status == "active":
-        active_list = list_active_equipment(lst)
-        for i in active_list:
-            total += i["maintenance_cost"]
-    elif status == "broken":
-        broken_list =  list_broken_equipment(lst)
-        for i in broken_list:
-            total += i["maintenance_cost"]
+def maintenance_cost_sum(status):
+    # total = 0
+    # if status == "active":
+    #     # active_list = list_active_equipment(lst)
+    #     # for i in active_list:
+    #     #     total += i["maintenance_cost"]
+        
+    # elif status == "broken":
+    #     # broken_list =  list_broken_equipment(lst)
+    #     # for i in broken_list:
+    #     #     total += i["maintenance_cost"]
+
+    status = status.lower().strip()
+    if status in ["active", "broken"]:
+        cur.execute("SELECT SUM(maintenance_cost) FROM equipment WHERE status = ?", [status])
     else:
-        for i in lst:
-            total += i["maintenance_cost"]
-
-    return total
-
-
+        cur.execute("SELECT SUM(maintenance_cost) FROM equipment")
+        # for i in lst:
+        #     total += i["maintenance_cost"]
+    result = cur.fetchone()[0]
+    if result is None:
+            return "No equipment records found."
+    elif status in ["active", "broken"]:
+        return f"Maintenance cost for all the {status} equipment is {result}"
+    else:
+        return f"Total maintenance cost is {result}"
+        
 
 while True:
     choice = int(input(
@@ -65,7 +75,7 @@ while True:
 
     if choice == 1:
         print(f"Enter equipment info:")
-        print(add_equipment(input("Equipment name:"), input("Equipment status (active/broken):"), input("Maintenance cost:")))
+        print(add_equipment(input("Equipment name:"), input("Equipment status (active/broken):"), int(input("Maintenance cost:"))))
     
     elif choice == 2:
         print(maintenance_cost_sum(input("Status (active / broken / all)")))
