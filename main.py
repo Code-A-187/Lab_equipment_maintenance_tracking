@@ -1,41 +1,36 @@
 from fastapi import FastAPI
 import uvicorn
-import sqlite3
 from app import maintenance_cost_sum, add_equipment
 
+from pydantic import BaseModel
 
-app = FastAPI(title="Test project")
+class EquipmentCreate(BaseModel):
+    name: str
+    status: str
+    maintenance_cost: int
+
+app = FastAPI(title="Lab Operations API")
 
 @app.get("/")
 def root():
     return {"message": "Lab Operations API is online"}
 
 @app.post("/equipment/create")
-def create_equipment():
-    pass
+def create_equipment(item: EquipmentCreate):
+    msg = add_equipment(item.name, item.status, item.maintenance_cost)
+
+    return {
+        "message": msg,
+        "data_recieved": item
+    }
 
 @app.get("/equipment/cost/")
-def get_cost(status: str): # if we put default value becomes optional
-    con = sqlite3.connect("lab.db", check_same_thread=False)
-    cur = con.cursor()
-
-    status = status.lower().strip()
-    if status in ["active", "broken"]:
-        cur.execute("SELECT SUM(maintenance_cost) FROM equipment WHERE status = ?", [status])
-    else:
-        cur.execute("SELECT SUM(maintenance_cost) FROM equipment")
-            # for i in lst:
-            #     total += i["maintenance_cost"]
-    result = cur.fetchone()[0]
-    if result is None:
-            con.close()
-            return "No equipment records found."
-    elif status in ["active", "broken"]:
-        con.close()
-        return f"Maintenance cost for all the {status} equipment is {result}"
-    else:
-        con.close()
-        return f"Total maintenance cost is {result}"
+def get_cost(status: str = "all"): # if we put default value becomes optional
+    total = maintenance_cost_sum(status)
+    return {
+        "status_filter": status,
+        "total_maintenance_cost": total
+        }
 
     
 if __name__== "__main__":
