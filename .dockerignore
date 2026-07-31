@@ -1,0 +1,30 @@
+# Ignore Python cache and virtual environments
+**/__pycache__
+**/.venv
+.venv/
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Ignore local secrets
+db/password.txt
+
+# Ignore version control and IDE files
+**/.git
+**/.gitignore
+**/.vscode
+**/.DS_Store
+
+# Ignore build artifacts
+build/
+dist/
+*.egg-info/
+*.py[cod]
+*.so
+
+# Ignore Compose and Docker assets (optional)
+**/docker-compose*
+**/compose.y*ml
+**/Dockerfile*
