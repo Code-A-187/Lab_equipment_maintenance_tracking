@@ -13,7 +13,7 @@ app = FastAPI(title="Lab Operations API")
 
 @app.get("/")
 def root():
-    return {"message": "Lab Operations API is online"}
+    return {"msg": "Lab Operations API is online"}
 
 @app.post("/equipment/create")
 def create_equipment(item: EquipmentCreate):
@@ -21,7 +21,7 @@ def create_equipment(item: EquipmentCreate):
 
     return {
         "message": msg,
-        "data_recieved": item
+        "data_received": item
     }
 
 @app.get("/equipment/cost/")
@@ -34,4 +34,4 @@ def get_cost(status: str = "all"): # if we put default value becomes optional
 
     
 if __name__== "__main__":
-    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
+    uvicorn.run("main:app", host="0.0.0.0", port=8000)
