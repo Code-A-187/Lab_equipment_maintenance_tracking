@@ -6,7 +6,7 @@
 # ]
 
 import sqlite3
-
+from pathlib import Path
 # con = sqlite3.connect("lab.db")
 
 # cur = con.cursor()
@@ -14,6 +14,8 @@ import sqlite3
 # # cur.execute("CREATE TABLE equipment(id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR, status TEXT, maintenance_cost INTEGER)")
 
 # # con.close()
+
+DB_PATH = Path(__file__).resolve().parent / "lab.db"
 
 def add_equipment(name, status, maintenance_cost):
     equipment = (name, status,  maintenance_cost)
@@ -24,7 +26,7 @@ def add_equipment(name, status, maintenance_cost):
 
     # "with" automatically commits transactions AND closes the connection
     # even if an error occurs inside the block!
-    with sqlite3.connect("lab.db") as con:
+    with sqlite3.connect(DB_PATH) as con:
         cur = con.cursor()
         cur.execute("INSERT INTO equipment VALUES(NULL, ?, ?, ?)", equipment)
         # con.commit() is handled automatically by 'with' on exit
@@ -56,7 +58,7 @@ def maintenance_cost_sum(status):
     #     # for i in broken_list:
     #     #     total += i["maintenance_cost"]
 
-    with sqlite3.connect("lab.db") as con:
+    with sqlite3.connect(DB_PATH) as con:
         cur = con.cursor()
         if status in ["active", "broken"]:
             cur.execute("SELECT SUM(maintenance_cost) FROM equipment WHERE status = ?", [status])
