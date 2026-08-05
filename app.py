@@ -14,8 +14,9 @@ from pathlib import Path
 # # cur.execute("CREATE TABLE equipment(id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR, status TEXT, maintenance_cost INTEGER)")
 
 # # con.close()
-
-DB_PATH = Path(__file__).resolve().parent / "lab.db"
+DATA_DIR = Path(__file__).resolve().parent / "data"
+DATA_DIR.mkdir(parents=True, exist_ok=True)
+DB_PATH = DATA_DIR / "lab.db"
 
 def add_equipment(name, status, maintenance_cost):
     equipment = (name, status,  maintenance_cost)

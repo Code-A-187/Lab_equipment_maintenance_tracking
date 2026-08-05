@@ -14,10 +14,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy files AND assign ownership directly to 'app' user
 COPY --chown=app:app main.py .
 COPY --chown=app:app app.py .
-COPY --chown=app:app lab.db .
 COPY --chown=app:app test_main.py .
+COPY --chown=app:app seed_data.py .
 
-RUN chown -R app:app /app
+RUN mkdir -p /app/data && chown -R app:app /app
 
 USER app
 
