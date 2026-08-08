@@ -30,3 +30,26 @@ def test_get_equipment_cost():
     assert "total_maintenance_cost" in data
     assert isinstance(data["total_maintenance_cost"], int)
 
+def test_create_equipment_negative_cost():
+    invalid_item = {"name": "Centrifuge", "status": "active", "maintenance_cost": -50}
+    response = client.post(
+            "/equipment/create", 
+            json = invalid_item
+            )
+    assert response.status_code == 422
+
+def test_create_equipment_short_name():
+    invalid_item = {"name": "   A   ", "status": "active", "maintenance_cost": 250}
+    response = client.post(
+        "equipment/create",
+        json = invalid_item
+    )
+    assert response.status_code == 422
+
+def test_create_equipment_invalid_status():
+    invalid_item = {"name": "Centrifuge", "status": "broken_xyz", "maintenance_cost": 250}
+    response = client.post(
+        "equipment/create",
+        json=invalid_item
+    )
+    assert response.status_code == 422

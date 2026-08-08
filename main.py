@@ -1,13 +1,20 @@
+from enum import Enum
+from typing import Annotated
+
 from fastapi import FastAPI
 import uvicorn
 from app import maintenance_cost_sum, add_equipment
 
-from pydantic import BaseModel
+from pydantic import BaseModel, NonNegativeFloat, StringConstraints
+
+class EquipentStatus(str, Enum):
+    ACTIVE = "active"
+    BROKEN = "broken"
 
 class EquipmentCreate(BaseModel):
-    name: str
-    status: str
-    maintenance_cost: int
+    name: Annotated[str, StringConstraints(strip_whitespace=True, min_length=2)]
+    status: EquipentStatus
+    maintenance_cost: NonNegativeFloat
 
 app = FastAPI(title="Lab Operations API")
 
