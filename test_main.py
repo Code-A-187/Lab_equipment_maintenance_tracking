@@ -53,3 +53,10 @@ def test_create_equipment_invalid_status():
         json=invalid_item
     )
     assert response.status_code == 422
+
+def test_export_equipment_csv():
+    response = client.get("/equipment/export/csv")
+    assert response.status_code == 200
+    assert "text/csv" in response.headers["content-type"]
+    assert "attachment;filename=myfilename.csv" in response.headers["content-disposition"]
+    assert "ID,Name,Status,Maintenance Cost" in response.text

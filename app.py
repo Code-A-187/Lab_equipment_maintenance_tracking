@@ -7,6 +7,10 @@
 
 import sqlite3
 from pathlib import Path
+
+import csv
+from io import StringIO
+
 # con = sqlite3.connect("lab.db")
 
 # cur = con.cursor()
@@ -72,7 +76,23 @@ def maintenance_cost_sum(status):
     if result is None:
         return 0
     return result
-        
+
+def get_all_equipment():
+    with sqlite3.connect(DB_PATH) as con:
+        cur = con.cursor()
+        cur.execute("SELECT id, name, status, maintenance_cost FROM EQUIPMENT")
+        result = make_CSV(cur.fetchall())
+        return result
+
+def make_CSV(data):
+    data_file = StringIO()
+    writer = csv.writer(data_file)
+    writer.writerow(['ID', 'Name', 'Status', 'Maintenance Cost'])
+    writer.writerows(data)
+    return data_file.getvalue()
+
+
+
 
 # while True:
 #     choice = int(input(

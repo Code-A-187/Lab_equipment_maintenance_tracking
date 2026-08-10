@@ -1,9 +1,9 @@
 from enum import Enum
 from typing import Annotated
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Response
 import uvicorn
-from app import maintenance_cost_sum, add_equipment
+from app import get_all_equipment, maintenance_cost_sum, add_equipment
 
 from pydantic import BaseModel, NonNegativeFloat, StringConstraints
 
@@ -38,6 +38,11 @@ def get_cost(status: str = "all"): # if we put default value becomes optional
         "status_filter": status,
         "total_maintenance_cost": total
         }
+
+@app.get("/equipment/export/csv")
+def export_equipment_csv():
+    f = get_all_equipment()
+    return Response(content=f, media_type="text/csv", headers={"Content-Disposition": "attachment;filename=myfilename.csv"})
 
     
 if __name__== "__main__":
