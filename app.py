@@ -6,10 +6,11 @@
 # ]
 
 import sqlite3
+import csv
 from pathlib import Path
 
-import csv
-from io import StringIO
+import pandas as pd
+from io import StringIO, BytesIO
 
 # con = sqlite3.connect("lab.db")
 
@@ -77,10 +78,10 @@ def maintenance_cost_sum(status):
         return 0
     return result
 
-def get_all_equipment():
+def get_all_equipment_to_csv():
     with sqlite3.connect(DB_PATH) as con:
         cur = con.cursor()
-        cur.execute("SELECT id, name, status, maintenance_cost FROM EQUIPMENT")
+        cur.execute("SELECT id, name, status, maintenance_cost FROM equipment")
         result = make_CSV(cur.fetchall())
         return result
 
@@ -92,8 +93,22 @@ def make_CSV(data):
     return data_file.getvalue()
 
 
+def get_all_equipment_to_excel():
+    with sqlite3.connect(DB_PATH) as con:
+        cur = con.cursor()
+        cur.execute("SELECT id, name, status, maintenance_cost FROM equipment")
+        result = make_excel(cur.fetchall())
+        return result
 
+def make_excel(data):
+    data_file = BytesIO()
+    df = pd.DataFrame(data, columns=['ID', 'Name', 'Status', 'Maintenance Cost'])
+    total_cost =  df['Maintenance Cost'].sum()
+    df.loc[len(df)] = ['TOTAL', '', '', total_cost]
+    with pd.ExcelWriter(data_file) as writer:
+        df.to_excel(writer, index=False)
 
+    return data_file.getvalue()
 # while True:
 #     choice = int(input(
 #         "--- LAB OPERATIONS MENU ---\n"

@@ -3,7 +3,7 @@ from typing import Annotated
 
 from fastapi import FastAPI, Response
 import uvicorn
-from app import get_all_equipment, maintenance_cost_sum, add_equipment
+from app import get_all_equipment_to_csv, get_all_equipment_to_excel, maintenance_cost_sum, add_equipment
 
 from pydantic import BaseModel, NonNegativeFloat, StringConstraints
 
@@ -41,9 +41,13 @@ def get_cost(status: str = "all"): # if we put default value becomes optional
 
 @app.get("/equipment/export/csv")
 def export_equipment_csv():
-    f = get_all_equipment()
-    return Response(content=f, media_type="text/csv", headers={"Content-Disposition": "attachment;filename=myfilename.csv"})
+    f = get_all_equipment_to_csv()
+    return Response(content=f, media_type="text/csv", headers={"Content-Disposition": "attachment; filename=equipment_report.csv"})
 
+@app.get("/equipment/export/excel")
+def export_equipment_excel():
+    f = get_all_equipment_to_excel()
+    return Response(content=f, media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", headers={"Content-Disposition": "attachment; filename=lab_equipment_report.xlsx"})
     
 if __name__== "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000)
