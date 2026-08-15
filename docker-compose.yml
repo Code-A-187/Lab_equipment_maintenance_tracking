@@ -6,6 +6,6 @@ services:
     volumes:
       - lab_data:/app/data
       
-    command: sh -c "python seed_data.py && uvicorn main:app --host 0.0.0.0 --port 8000"
+    command: sh -c "python app/seed_data.py && uvicorn main:app --host 0.0.0.0 --port 8000"
 volumes:
   lab_data:

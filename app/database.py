@@ -109,7 +109,7 @@ def make_excel(data):
         df.to_excel(writer, index=False)
     return data_file.getvalue()
 
-def get_analytycs_summary():
+def get_analytics_summary():
     with sqlite3.connect(DB_PATH) as con:
         con.row_factory = sqlite3.Row
         cur = con.cursor()
