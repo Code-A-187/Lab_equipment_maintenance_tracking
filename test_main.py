@@ -78,3 +78,23 @@ def test_export_equipment_excel():
     expected_columns = ["ID", "Name", "Status", "Maintenance Cost"]
     for col in expected_columns:
         assert col in df.columns
+
+def test_get_analitycs_summery():
+    response = client.get("/equipment/analytics/summary")
+
+    assert  response.status_code == 200
+
+    data = response.json()
+
+    assert "total_equipment_count" in data
+    assert "active_count" in data
+    assert "broken_count" in data
+    assert "broken_ratio_percentage" in data
+    assert "total_maintenance_cost" in data
+    assert "average_maintenance_cost" in data
+    assert "most_expensive_item_cost" in data
+    
+    # 5. Assert logical math checks
+    assert data["total_equipment_count"] == data["active_count"] + data["broken_count"]
+    assert data["total_equipment_count"] >= 0
+    assert 0.0 <= data["broken_ratio_percentage"] <= 100.0
