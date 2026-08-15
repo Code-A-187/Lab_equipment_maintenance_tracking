@@ -3,7 +3,7 @@ from typing import Annotated
 
 from fastapi import FastAPI, Response
 import uvicorn
-from app import get_all_equipment_to_csv, get_all_equipment_to_excel, maintenance_cost_sum, add_equipment
+from app import get_all_equipment_to_csv, get_all_equipment_to_excel, get_analytycs_summary, maintenance_cost_sum, add_equipment
 
 from pydantic import BaseModel, NonNegativeFloat, StringConstraints
 
@@ -15,6 +15,15 @@ class EquipmentCreate(BaseModel):
     name: Annotated[str, StringConstraints(strip_whitespace=True, min_length=2)]
     status: EquipentStatus
     maintenance_cost: NonNegativeFloat
+
+class AnalyticsSummaryResponse(BaseModel):
+    total_equipment_count: int
+    active_count: int
+    broken_count: int
+    broken_ratio_percentage: float
+    total_maintenance_cost: float
+    average_maintenance_cost: float
+    most_expensive_item_cost: float
 
 app = FastAPI(title="Lab Operations API")
 
@@ -48,6 +57,12 @@ def export_equipment_csv():
 def export_equipment_excel():
     f = get_all_equipment_to_excel()
     return Response(content=f, media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", headers={"Content-Disposition": "attachment; filename=lab_equipment_report.xlsx"})
-    
+
+@app.get("/equipment/analytics/summary", response_model=AnalyticsSummaryResponse)
+def analytics_summary():
+    data = get_analytycs_summary()
+
+    return AnalyticsSummaryResponse(**data)
+
 if __name__== "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000)

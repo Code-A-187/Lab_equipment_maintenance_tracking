@@ -107,8 +107,50 @@ def make_excel(data):
     df.loc[len(df)] = ['TOTAL', '', '', total_cost]
     with pd.ExcelWriter(data_file) as writer:
         df.to_excel(writer, index=False)
-
     return data_file.getvalue()
+
+def get_analytycs_summary():
+    with sqlite3.connect(DB_PATH) as con:
+        con.row_factory = sqlite3.Row
+        cur = con.cursor()
+        
+        # Triple quotes """ allow multi-line SQL without backslash syntax errors
+        cur.execute("""
+            SELECT 
+                COUNT(*) as total_equipment_count,
+                SUM(CASE WHEN status = 'active' THEN 1 ELSE 0 END) as active_count,
+                SUM(CASE WHEN status = 'broken' THEN 1 ELSE 0 END) as broken_count,
+                COALESCE(SUM(maintenance_cost), 0.0) as total_maintenance_cost,
+                COALESCE(AVG(maintenance_cost), 0.0) as average_maintenance_cost,
+                COALESCE(MAX(maintenance_cost), 0.0) as most_expensive_item_cost
+            FROM equipment
+        """)
+
+        row = cur.fetchone()
+        
+        # Convert sqlite3.Row to a standard Python dictionary
+        data = dict(row) if row else {
+            "total_count": 0,
+            "active_count": 0,
+            "broken_count": 0,
+            "total_cost": 0.0,
+            "avg_cost": 0.0,
+            "max_cost": 0.0
+        }
+
+        # Calculate the broken equipment ratio percentage safely
+
+        total = data["total_equipment_count"]
+        broken = data["broken_count"] or 0
+
+        if total > 0:
+            data["broken_ratio_percentage"] = round((broken / total) * 100, 2)
+        else:
+            data["broken_ratio_percentage"] = 0.0
+
+        return data
+    
+    
 # while True:
 #     choice = int(input(
 #         "--- LAB OPERATIONS MENU ---\n"
