@@ -30,9 +30,9 @@ A production-ready, containerized FastAPI backend designed to automate laborator
 
 ### 1. Clone the Repository
 
-```git clone https://github.com/Code-A-187/test_project_1.git```
-```cd test_project_1```
-``` docker-compose up --build```
+* ```git clone https://github.com/Code-A-187/test_project_1.git```
+* ```cd test_project_1```
+* ``` docker-compose up --build```
 
 
 #### The API automatically runs database migrations and seeds initial equipment data upon container startup
